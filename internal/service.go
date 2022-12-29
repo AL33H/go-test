@@ -9,11 +9,10 @@ import (
 	"github.com/al33h/go-test/models"
 )
 
-func Calcular(consulta models.ConsultaRequest) ConsultaRealizada {
+func Calcular(consulta *models.ConsultaRequest) ConsultaRealizada {
 	consultaRealizada := ConsultaRealizada{}
-	consultaRealizada.ToConsultaRealizada(consulta)
+	consultaRealizada.ToConsultaRealizada(*consulta)
 	return consultaRealizada
-
 }
 
 func ConsultaExternalCEP(cep string) models.ConsultaExternalCEP {

@@ -9,13 +9,13 @@ import (
 
 type ConsultaRealizada struct {
 	gorm.Model
-	NomeDestinatario    string    `json:"nomeDestinatario"`
-	CepOrigem           string    `json:"CepOrigem"`
-	CepDestino          string    `json:"CEPDestino"`
-	Peso                float64   `json:"peso"`
-	VlTotalFrete        float64   `json:"vlTotalFrete"`
-	DataPrevistaEntrega time.Time `json:"dataPrevistaEntrega"`
-	DataConsulta        time.Time `json:"dataConsulta"`
+	NomeDestinatario    string
+	CepOrigem           string
+	CepDestino          string
+	Peso                float64
+	VlTotalFrete        float64
+	DataPrevistaEntrega time.Time
+	DataConsulta        time.Time
 }
 
 func (c *ConsultaRealizada) ToConsultaRealizada(consulta models.ConsultaRequest) {

@@ -1,7 +1,6 @@
 package web
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,13 +12,12 @@ import (
 
 func Consultar(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		context.Background()
 		consulta := &models.ConsultaRequest{}
-		json.NewDecoder(r.Body).Decode(&consulta)
-		consultaRealizada := internal.Calcular(*consulta)
+		json.NewDecoder(r.Body).Decode(consulta)
+		consultaRealizada := internal.Calcular(consulta)
 
 		fmt.Println(consultaRealizada)
-		database.DB.Create(consultaRealizada)
+		database.DB.Create(&consultaRealizada)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(201)

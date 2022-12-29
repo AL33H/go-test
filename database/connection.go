@@ -12,11 +12,11 @@ var DB *gorm.DB
 
 func GetConnection() {
 	dsn := "user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Taipei"
-	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Banco conectado!")
-
+	DB = db
 	DB.AutoMigrate(&internal.ConsultaRealizada{})
 }
