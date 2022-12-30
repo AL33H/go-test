@@ -1,4 +1,4 @@
-package database
+package connection
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func GetConnection() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Banco conectado!")
+	fmt.Println("Db connection established!")
 	DB = db
 	DB.AutoMigrate(&internal.ConsultaRealizada{})
 }
