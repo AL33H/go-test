@@ -1,9 +1,9 @@
-package connection
+package config
 
 import (
 	"fmt"
 
-	"github.com/al33h/go-test/internal"
+	"github.com/al33h/go-test/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -18,5 +18,5 @@ func GetConnection() {
 	}
 	fmt.Println("Db connection established!")
 	DB = db
-	DB.AutoMigrate(&internal.ConsultaRealizada{})
+	DB.AutoMigrate(&domain.ConsultaRealizada{})
 }
