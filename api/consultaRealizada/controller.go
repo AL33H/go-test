@@ -29,19 +29,16 @@ func new(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		consultaRealizada, err := CalcularTodasInfo(consulta)
+		consultaResponse, err := CalcularTodasInfo(consulta)
+
 		if err != nil {
 			w.WriteHeader(http.StatusBadGateway)
 			json.NewEncoder(w).Encode(err.Error())
 			return
 		}
 
-		config.DB.Create(&consultaRealizada)
-
-		ConsultaResponse := consultaRealizada.ToConsultaResponse()
-
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(ConsultaResponse)
+		json.NewEncoder(w).Encode(consultaResponse)
 	}
 }
 

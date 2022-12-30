@@ -1,15 +1,13 @@
 package consultarealizada
 
 import (
-	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/al33h/go-test/domain"
 	"github.com/al33h/go-test/models"
+	"github.com/al33h/go-test/repository"
+	"github.com/al33h/go-test/utils"
 )
 
 func init() {
@@ -19,46 +17,29 @@ func init() {
 }
 
 // Calcula VlTotalFrete, DataPrevistaEntrega
-func CalcularTodasInfo(consulta *models.ConsultaRequest) (domain.ConsultaRealizada, error) {
+func CalcularTodasInfo(consulta *models.ConsultaRequest) (models.ConsultaResponse, error) {
 	consultaRealizada := domain.ConsultaRealizada{}
 	consultaRealizada.ToConsultaRealizada(*consulta)
 	err := Calcular(consultaRealizada)
+
 	if err != nil {
-		return consultaRealizada, err
+		return models.ConsultaResponse{}, err
 	}
 
-	return consultaRealizada, nil
-}
+	repository.Create(consultaRealizada)
+	consultaResponse := consultaRealizada.ToConsultaResponse()
 
-// Requisita para API do viacep
-func ConsultaExternalCEP(cep string) (models.ConsultaExternalCEP, error) {
-	url := "https://viacep.com.br/ws/" + cep + "/json/"
-
-	resp, err := http.Get(url)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		return models.ConsultaExternalCEP{}, errors.New("erro ao requisitar na viacep o cep: " + cep)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return models.ConsultaExternalCEP{}, errors.New("não foi possivel pegar o payload de retorno do viaCep para o cep " + cep)
-	}
-
-	var consultaExternalCEP models.ConsultaExternalCEP
-	json.Unmarshal(body, &consultaExternalCEP)
-
-	return consultaExternalCEP, nil
+	return consultaResponse, nil
 }
 
 // Calcula informações para consultaRealizada
 func Calcular(consulta domain.ConsultaRealizada) error {
-	cepOrigem, err := ConsultaExternalCEP(consulta.CepOrigem)
+	cepOrigem, err := utils.ConsultaExternalCEP(consulta.CepOrigem)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	cepDestino, err := ConsultaExternalCEP(consulta.CepDestino)
+	cepDestino, err := utils.ConsultaExternalCEP(consulta.CepDestino)
 	if err != nil {
 		log.Println(err)
 		return err
