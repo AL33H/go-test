@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -11,7 +12,8 @@ import (
 
 // Requisita para API do viacep
 func ConsultaExternalCEP(cep string) (models.ConsultaExternalCEP, error) {
-	url := "https://viacep.com.br/ws/" + cep + "/json/"
+
+	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep)
 
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode != http.StatusOK {

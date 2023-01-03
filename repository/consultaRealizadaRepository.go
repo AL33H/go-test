@@ -15,3 +15,15 @@ func GetAll() []domain.ConsultaRealizada {
 	config.DB.Find(&consultaRealizadas)
 	return consultaRealizadas
 }
+
+func GetById(id int) domain.ConsultaRealizada {
+	var consultaRealizadas domain.ConsultaRealizada
+	config.DB.First(&consultaRealizadas, id)
+	return consultaRealizadas
+}
+
+func DeleteById(id int) {
+	var consultaRealizadas domain.ConsultaRealizada
+	config.DB.First(&consultaRealizadas, id)
+	config.DB.Delete(&consultaRealizadas)
+}

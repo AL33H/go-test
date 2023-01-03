@@ -3,6 +3,7 @@ package consultarealizada
 import (
 	"log"
 	"os"
+	"sync"
 
 	"github.com/al33h/go-test/domain"
 	"github.com/al33h/go-test/models"
@@ -20,7 +21,7 @@ func init() {
 func CalcularTodasInfo(consulta *models.ConsultaRequest) (models.ConsultaResponse, error) {
 	consultaRealizada := domain.ConsultaRealizada{}
 	consultaRealizada.ToConsultaRealizada(*consulta)
-	err := Calcular(consultaRealizada)
+	err := Calcular(&consultaRealizada)
 
 	if err != nil {
 		return models.ConsultaResponse{}, err
@@ -33,7 +34,7 @@ func CalcularTodasInfo(consulta *models.ConsultaRequest) (models.ConsultaRespons
 }
 
 // Calcula informações para consultaRealizada
-func Calcular(consulta domain.ConsultaRealizada) error {
+func Calcular(consulta *domain.ConsultaRealizada) error {
 	cepOrigem, err := utils.ConsultaExternalCEP(consulta.CepOrigem)
 	if err != nil {
 		log.Println(err)
@@ -45,40 +46,42 @@ func Calcular(consulta domain.ConsultaRealizada) error {
 		return err
 	}
 
-	CalcularValorFrete(cepOrigem, cepDestino, consulta)
-	CalcularPrevisaoEntrega(cepOrigem, cepDestino, consulta)
+	var WaitGroup sync.WaitGroup
+	WaitGroup.Add(2)
+
+	go func(origem models.ConsultaExternalCEP, destino models.ConsultaExternalCEP, consulta *domain.ConsultaRealizada) {
+
+		prazo := 10
+
+		if origem.Uf == destino.Uf {
+			prazo = 1
+		}
+
+		if origem.Ddd == destino.Ddd {
+			prazo = 3
+		}
+
+		consulta.DataPrevistaEntrega = consulta.DataConsulta.AddDate(0, 0, prazo)
+		WaitGroup.Done()
+
+	}(cepOrigem, cepDestino, consulta)
+
+	go func(origem models.ConsultaExternalCEP, destino models.ConsultaExternalCEP, consulta *domain.ConsultaRealizada) {
+		desconto := 1.0
+
+		if origem.Uf == destino.Uf {
+			desconto = 0.25
+		}
+
+		if origem.Ddd == destino.Ddd {
+			desconto = 0.5
+		}
+
+		consulta.VlTotalFrete = consulta.Peso * desconto
+		WaitGroup.Done()
+	}(cepOrigem, cepDestino, consulta)
+
+	WaitGroup.Wait()
 
 	return nil
-}
-
-// Calcula VlTotalFrete
-func CalcularValorFrete(origem models.ConsultaExternalCEP, destino models.ConsultaExternalCEP, consulta domain.ConsultaRealizada) {
-	desconto := 1.0
-
-	if origem.Uf == destino.Uf {
-		desconto = 0.25
-	}
-
-	if origem.Ddd == destino.Ddd {
-		desconto = 0.5
-	}
-
-	consulta.VlTotalFrete = consulta.Peso * desconto
-
-}
-
-// Calcula DataPrevistaEntrega
-func CalcularPrevisaoEntrega(origem models.ConsultaExternalCEP, destino models.ConsultaExternalCEP, consulta domain.ConsultaRealizada) {
-	prazo := 10
-
-	if origem.Uf == destino.Uf {
-		prazo = 1
-	}
-
-	if origem.Ddd == destino.Ddd {
-		prazo = 3
-	}
-
-	consulta.DataPrevistaEntrega = consulta.DataConsulta.AddDate(0, 0, prazo)
-
 }

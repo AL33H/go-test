@@ -1,10 +1,10 @@
 package models
 
 type ConsultaRequest struct {
-	Nome       string  `json:"nome"`
-	CepOrigem  string  `json:"cepOrigem"`
-	CepDestino string  `json:"cepDestino"`
-	Peso       float64 `json:"peso"`
+	Nome       string  `json:"nome" validate:"required"`
+	CepOrigem  string  `json:"cepOrigem" validate:"required"`
+	CepDestino string  `json:"cepDestino" validate:"required"`
+	Peso       float64 `json:"peso" validate:"required"`
 }
 
 type ConsultaResponse struct {
