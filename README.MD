@@ -65,7 +65,9 @@ git clone https://github.com/AL33H/go-test.git
 ### 3. Para executar o programa, deverá executar o comando ```go run main.go```
 
 ### 4. Para testar via postman, basta importar o arquivo.
-```json {
+```json 
+{
+
 	"info": {
 		"_postman_id": "f4860117-4f6b-4121-9ba0-c0d984d84c05",
 		"name": "API-GO-TEST",
